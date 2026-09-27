@@ -5,7 +5,7 @@ GitHub Actions bot for **Golden Boys** (`clubId: 16999`, `common-gen5`).
 ## Automatic behavior
 
 - Checks the latest **20 League matches** during the evening.
-- Posts new match results to the club Discord webhook.
+- Posts each newly completed match to the **session** Discord webhook (quasi-live post-match).
 - Sends the end-of-session club/player recap.
 - Keeps anti-duplicate state in `data/state.json`.
 - Playoffs are currently ignored.
@@ -45,8 +45,9 @@ For every historical session, replay sends the match history + club recap to `DI
 
 ## Secrets
 
-- `DISCORD_CLUB_WEBHOOK_URL`
-- `DISCORD_PLAYER_WEBHOOK_URL`
+- `DISCORD_CLUB_WEBHOOK_URL` — end-of-session club recap (`#stats-club`)
+- `DISCORD_PLAYER_WEBHOOK_URL` — end-of-session player recap (`#stats-player`)
+- `DISCORD_SESSION_WEBHOOK_URL` — newly completed matches during the playing session (`#session`)
 
 ## Club configuration
 
@@ -55,3 +56,7 @@ Edit `club.config.json` to reuse the bot for another club.
 ## Notes
 
 The EA Clubs endpoint is unofficial. V14 reuses the same EA request implementation for normal polling and history fallback, rather than maintaining a second history-specific HTTP implementation.
+
+## History safety
+
+`data/history.json` is historical source data. Normal runs only commit `data/state.json`; they never overwrite or truncate `data/history.json`. When upgrading an existing repository, keep the repository’s existing `data/history.json`.

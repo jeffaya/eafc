@@ -5,8 +5,8 @@ import {sendDiscord} from "./discord.js";
 import {loadState,saveState} from "./state.js";
 import {sessionKey} from "./session.js";
 
-const webhook=process.env.DISCORD_CLUB_WEBHOOK_URL;
-if(!webhook)throw new Error("Missing DISCORD_CLUB_WEBHOOK_URL.");
+const webhook=process.env.DISCORD_SESSION_WEBHOOK_URL;
+if(!webhook)throw new Error("Missing DISCORD_SESSION_WEBHOOK_URL.");
 
 const state=await loadState();
 state.processedMatchIds??=[];

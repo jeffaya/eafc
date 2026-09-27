@@ -48,6 +48,7 @@ jobs:
         env:
           DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
           DISCORD_PLAYER_WEBHOOK_URL: ${{ secrets.DISCORD_PLAYER_WEBHOOK_URL }}
+          DISCORD_SESSION_WEBHOOK_URL: ${{ secrets.DISCORD_SESSION_WEBHOOK_URL }}
         shell: bash
         run: |
           MODE="${{ steps.choose.outputs.mode }}"

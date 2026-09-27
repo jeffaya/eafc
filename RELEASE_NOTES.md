@@ -1,5 +1,15 @@
 # Release Notes
 
+## V16.2
+
+- Adds `DISCORD_SESSION_WEBHOOK_URL`.
+- Newly completed match cards now go to the session webhook instead of the club recap webhook.
+- Club recap remains on `DISCORD_CLUB_WEBHOOK_URL`; player recap remains on `DISCORD_PLAYER_WEBHOOK_URL`.
+- `debug-connect` validates all three webhooks.
+- `data/history.json` is never changed by normal bot execution; upgrades must preserve the repository copy.
+
+---
+
 ## V16.1
 
 - Historical replay titles now show the real session date instead of `HISTORY`.
