@@ -1,4 +1,4 @@
-name: 👑 Golden Boys Bot
+name: EA FC Clubs Bot
 
 on:
   workflow_dispatch:

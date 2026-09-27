@@ -60,7 +60,7 @@ Your repository should look roughly like this:
 my-fc-club-bot/
 ├── .github/
 │   └── workflows/
-│       └── golden-boys.yml
+│       └── pipeline.yml
 ├── data/
 │   └── state.json
 ├── src/
@@ -154,6 +154,18 @@ Commit/push the modified `club.config.json` to GitHub.
 
 ---
 
+
+## Why is the workflow called `EA FC Clubs Bot`?
+
+The workflow file is deliberately generic:
+
+`.github/workflows/pipeline.yml`
+
+Your club name still comes from `club.config.json` and is used by the bot in Discord messages.
+
+GitHub determines the workflow name before the repository files are checked out, so a workflow cannot directly read `club.config.json` to dynamically rename itself in the Actions sidebar. Keeping the GitHub workflow name generic means you never have to edit the pipeline when reusing this project for another club.
+
+
 # 💬 Step 3 — Create a Discord webhook
 
 The webhook is what allows GitHub Actions to send messages into your Discord channel.
@@ -214,7 +226,7 @@ If GitHub asks you to enable workflows, enable them.
 
 The workflow is located at:
 
-`.github/workflows/golden-boys.yml`
+`.github/workflows/pipeline.yml`
 
 You normally do not need to edit it.
 
@@ -230,7 +242,7 @@ Before testing EA data, make sure Discord works.
 
 Go to:
 
-**GitHub repository → Actions → Golden Boys Bot → Run workflow**
+**GitHub repository → Actions → EA FC Clubs Bot → Run workflow**
 
 For the `mode` option choose:
 
@@ -240,7 +252,7 @@ Run the workflow.
 
 After a few seconds, your Discord channel should receive a message similar to:
 
-> 👑 **Golden Boys Bot connected** — webhook operational.
+> 👑 **EA FC Clubs Bot connected** — webhook operational.
 
 If this appears, GitHub and Discord are correctly connected.
 
@@ -335,7 +347,7 @@ Important: the recap uses matches recorded by this bot during the current sessio
 
 The schedule is configured in:
 
-`.github/workflows/golden-boys.yml`
+`.github/workflows/pipeline.yml`
 
 The default project watches matches every 10 minutes during the evening and runs the Daily Recap after the session.
 
@@ -480,7 +492,7 @@ For a normal installation:
 - `src/*.js`
 - `data/state.json`
 - `package.json`
-- `.github/workflows/golden-boys.yml`
+- `.github/workflows/pipeline.yml`
 
 That is all that is required for a standard installation.
 
