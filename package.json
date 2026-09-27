@@ -1,19 +1,14 @@
 {
   "name": "golden-boys-bot",
-  "version": "13.3.0",
+  "version": "15.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "test:webhook": "node src/test-webhook.js",
-    "replay": "node src/replay-last-match.js",
     "recap": "node src/daily-recap.js",
-    "debug:last-match": "node src/debug-last-match.js",
-    "player-recap": "node src/player-recap.js",
-    "full-test": "node src/full-test.js",
-    "debug-possession": "node src/debug-possession.js",
-    "debug-history": "node src/debug-history.js",
-    "replay-history": "node src/replay-history.js"
+    "debug:connect": "node src/debug-connect.js",
+    "debug:full": "node src/debug-full.js",
+    "replay:history": "node src/replay-history.js"
   },
   "engines": {
     "node": ">=24"

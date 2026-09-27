@@ -6,23 +6,12 @@ on:
       mode:
         description: "Execution mode"
         required: true
-        default: "test-webhook"
+        default: "debug-connect"
         type: choice
         options:
-          - test-webhook
-          - replay-last-match
-          - daily-recap
-          - player-recap
-          - full-test
-          - debug-last-match
-          - debug-possession
-          - debug-history
+          - debug-connect
+          - debug-full
           - replay-history
-      confirm_history_replay:
-        description: "For replay-history only: type YES to publish the historical replay"
-        required: false
-        default: "NO"
-        type: string
   schedule:
     - cron: "*/10 20-23,0-2 * * *"
     - cron: "55 2 * * *"
@@ -59,21 +48,15 @@ jobs:
         env:
           DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
           DISCORD_PLAYER_WEBHOOK_URL: ${{ secrets.DISCORD_PLAYER_WEBHOOK_URL }}
-          CONFIRM_HISTORY_REPLAY: ${{ github.event.inputs.confirm_history_replay || 'NO' }}
         shell: bash
         run: |
           MODE="${{ steps.choose.outputs.mode }}"
           echo "Mode: $MODE"
           case "$MODE" in
             normal) node src/index.js ;;
-            test-webhook) node src/test-webhook.js ;;
-            replay-last-match) node src/replay-last-match.js ;;
             daily-recap) node src/daily-recap.js ;;
-            player-recap) node src/player-recap.js ;;
-            full-test) node src/full-test.js ;;
-            debug-last-match) node src/debug-last-match.js ;;
-            debug-possession) node src/debug-possession.js ;;
-            debug-history) node src/debug-history.js ;;
+            debug-connect) node src/debug-connect.js ;;
+            debug-full) node src/debug-full.js ;;
             replay-history) node src/replay-history.js ;;
             *) echo "Unknown mode: $MODE"; exit 1 ;;
           esac

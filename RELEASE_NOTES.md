@@ -1,5 +1,35 @@
 # Release Notes
 
+## V15
+
+### Full club + player historical replay
+
+- `replay-history` still uses `data/history.json` first, with EA 20-League-match fallback.
+- For every historical evening session, matches are replayed oldest to newest.
+- Club channel receives the session header, individual match embeds, and reconstructed club recap.
+- Player channel receives the reconstructed full-session player recap.
+- Player recap uses the same aggregation/stat code as the normal daily recap.
+- Both Discord webhook secrets are required for `replay-history`.
+- Historical replay still does not modify `data/state.json`.
+
+---
+
+## V14
+
+### Cleaner execution modes + local history priority
+
+- Manual modes reduced to `debug-connect`, `debug-full`, and `replay-history`.
+- `test-webhook` renamed to `debug-connect`.
+- `full-test` renamed to `debug-full`.
+- Removed the replay-history YES/NO confirmation.
+- `replay-history` first reads `data/history.json` when present and non-empty.
+- If no usable local history file exists, it falls back to the EA call for 20 `leagueMatch` matches.
+- Normal EA polling is now League-only as well.
+- History fallback reuses the same EA request helper/headers as normal polling.
+- The package does not ship an empty `data/history.json`, protecting an existing repository copy.
+
+---
+
 This file contains the version history of the EA SPORTS FC Clubs → Discord Bot.
 
 The main [README.md](./README.md) is intentionally kept simple and describes installation, architecture and behavior rather than historical changes.
