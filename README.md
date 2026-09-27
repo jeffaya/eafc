@@ -266,7 +266,7 @@ Now run the workflow again, but select:
 
 `replay-last-match`
 
-This asks EA for the most recent match found for your configured club and sends it to Discord.
+This asks EA for the latest match from the **previous calendar day** in the club's configured timezone and sends it to Discord. This makes the test useful when it is run after midnight (for example around 03:00), when the session you want to test belongs to the previous day.
 
 This is a test: it does **not** mark the match as processed and does not change the normal bot history.
 

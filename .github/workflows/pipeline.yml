@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "Mode d'exécution"
+        description: "Execution mode"
         required: true
         default: "normal"
         type: choice
