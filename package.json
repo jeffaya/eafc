@@ -1,0 +1,1 @@
+{"name":"golden-boys-bot","version":"1.0.0","private":true,"type":"module","scripts":{"start":"node src/index.js","test:webhook":"node src/test-webhook.js"},"engines":{"node":">=22"}}
