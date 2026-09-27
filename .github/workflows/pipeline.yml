@@ -6,119 +6,88 @@ on:
       mode:
         description: "Execution mode"
         required: true
-        default: "normal"
+        default: "test-webhook"
         type: choice
         options:
-          - normal
           - test-webhook
           - replay-last-match
-          - debug-last-match
           - daily-recap
           - player-recap
           - full-test
-
+          - debug-last-match
+          - debug-possession
+          - debug-history
+          - replay-history
       confirm_history_replay:
-        description: "Type YES to allow replay-history to post all returned historical matches"
+        description: "For replay-history only: type YES to publish the historical replay"
         required: false
         default: "NO"
+        type: string
   schedule:
-    # Match watcher: every 10 min from 20:00 through 02:50 Paris time.
     - cron: "*/10 20-23,0-2 * * *"
-      timezone: "Europe/Paris"
-    # Daily recap after the usual session.
     - cron: "55 2 * * *"
-      timezone: "Europe/Paris"
 
 permissions:
   contents: write
 
-concurrency:
-  group: golden-boys-bot
-  cancel-in-progress: false
-
-env:
-  CONFIRM_HISTORY_REPLAY: ${{ github.event.inputs.confirm_history_replay || 'NO' }}
-
 jobs:
-  check:
+  bot:
     runs-on: ubuntu-24.04
-    timeout-minutes: 5
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.repository.default_branch }}
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 24
+          node-version: "24"
 
-      - name: Test webhook
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'test-webhook' }}
+      - name: Choose execution mode
+        id: choose
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "mode=${{ github.event.inputs.mode }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event.schedule }}" == "55 2 * * *" ]]; then
+            echo "mode=daily-recap" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=normal" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run bot
         env:
           DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
           DISCORD_PLAYER_WEBHOOK_URL: ${{ secrets.DISCORD_PLAYER_WEBHOOK_URL }}
-        run: node src/test-webhook.js
+          CONFIRM_HISTORY_REPLAY: ${{ github.event.inputs.confirm_history_replay || 'NO' }}
+        shell: bash
+        run: |
+          MODE="${{ steps.choose.outputs.mode }}"
+          echo "Mode: $MODE"
+          case "$MODE" in
+            normal) node src/index.js ;;
+            test-webhook) node src/test-webhook.js ;;
+            replay-last-match) node src/replay-last-match.js ;;
+            daily-recap) node src/daily-recap.js ;;
+            player-recap) node src/player-recap.js ;;
+            full-test) node src/full-test.js ;;
+            debug-last-match) node src/debug-last-match.js ;;
+            debug-possession) node src/debug-possession.js ;;
+            debug-history) node src/debug-history.js ;;
+            replay-history) node src/replay-history.js ;;
+            *) echo "Unknown mode: $MODE"; exit 1 ;;
+          esac
 
-      - name: Replay latest real match
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'replay-last-match' }}
-        env:
-          DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
-        run: node src/replay-last-match.js
-
-      - name: Debug last match raw EA payload
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'debug-last-match' }}
-        run: npm run debug:last-match
-
-      - name: Player recap test
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'player-recap' }}
-        env:
-          DISCORD_PLAYER_WEBHOOK_URL: ${{ secrets.DISCORD_PLAYER_WEBHOOK_URL }}
-        run: node src/player-recap.js
-
-      - name: Full test
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'full-test' }}
-        env:
-          DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
-          DISCORD_PLAYER_WEBHOOK_URL: ${{ secrets.DISCORD_PLAYER_WEBHOOK_URL }}
-        run: node src/full-test.js
-
-      - name: Daily recap
-        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.mode == 'daily-recap') || (github.event_name == 'schedule' && github.event.schedule == '55 2 * * *') }}
-        env:
-          DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
-          DISCORD_PLAYER_WEBHOOK_URL: ${{ secrets.DISCORD_PLAYER_WEBHOOK_URL }}
-        run: node src/daily-recap.js
-
-      - name: Check new matches
-        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.mode == 'normal') || (github.event_name == 'schedule' && github.event.schedule != '55 2 * * *') }}
-        env:
-          DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
-        run: node src/index.js
-
-      - name: Persist state
-        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.mode == 'normal') || (github.event_name == 'schedule' && github.event.schedule != '55 2 * * *') }}
+      - name: Commit state
+        if: steps.choose.outputs.mode == 'normal'
+        shell: bash
         run: |
           if git diff --quiet -- data/state.json; then
             echo "No state change."
             exit 0
           fi
-          git config user.name "golden-boys-bot[bot]"
-          git config user.email "golden-boys-bot[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/state.json
-          git commit -m "chore(bot): update match state"
-          git pull --rebase
+          git commit -m "chore: update EA FC bot state"
           git push
-
-      - name: Debug available history
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'debug-history'
-        run: node src/debug-history.js
-
-      - name: Replay available history
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'replay-history'
-        env:
-          DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
-          CONFIRM_HISTORY_REPLAY: ${{ github.event.inputs.confirm_history_replay }}
-        run: node src/replay-history.js
-

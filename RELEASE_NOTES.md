@@ -6,6 +6,18 @@ The main [README.md](./README.md) is intentionally kept simple and describes ins
 
 ---
 
+## V13.1
+
+### History workflow + session headers fix
+
+- Rebuilds the manual GitHub Actions mode selector so `debug-history` and `replay-history` are visible.
+- Historical replay is grouped by evening session.
+- Each session starts with its French local date, first match time, last match time and match count.
+- Matches after midnight and before 06:00 remain attached to the previous evening's session.
+- Historical replay still leaves `data/state.json` untouched.
+
+---
+
 ## V13
 
 ### Historical replay

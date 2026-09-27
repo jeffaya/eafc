@@ -227,7 +227,7 @@ For a first installation, `test-webhook` followed by `full-test` is the simplest
 
 `debug-history` should be run first. It asks EA for a large League + Playoff history, deduplicates matches by match ID and reports the oldest/newest match returned.
 
-`replay-history` then sends those returned matches to `#stats-club` in chronological order. It deliberately does **not** modify `data/state.json`, so the normal watcher remains untouched.
+`replay-history` groups those returned matches by evening session and sends them to `#stats-club` in chronological order. Each session starts with its date, first-match time, last-match time and match count. Matches after midnight and before 06:00 stay attached to the previous evening. It deliberately does **not** modify `data/state.json`, so the normal watcher remains untouched.
 
 For safety, `replay-history` requires the manual workflow field `confirm_history_replay` to be exactly `YES`.
 
