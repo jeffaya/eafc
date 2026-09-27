@@ -1,3 +1,27 @@
+# V9 — Player session recap + full test
+
+V9 adds player-session statistics based on fields confirmed from a real EA Clubs payload:
+
+- matches played
+- average rating
+- goals
+- assists
+- pass accuracy (`passesmade / passattempts`)
+- tackle success (`tacklesmade / tackleattempts`)
+
+The automatic **Daily Recap** now sends two Discord messages: the club recap, then the player recap.
+
+Manual Actions modes:
+- `player-recap` — sends only the player recap for the latest EA session available.
+- `full-test` — sends, in one run: webhook test, latest real match, club recap, and player recap. It does **not** modify `data/state.json`.
+- `debug-last-match` remains available for inspecting EA's raw JSON.
+
+Player recap data is fetched live from EA for the session, so upgrading from V8 does not require old `state.json` entries to already contain the new player fields.
+
+> Balls won/lost are intentionally not shown because the real payload does not expose reliable named fields for them.
+
+---
+
 # 👑 EA SPORTS FC Clubs → Discord Bot
 
 A small, free, serverless bot that watches an EA SPORTS FC Club and automatically posts match results to Discord.

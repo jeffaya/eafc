@@ -1,7 +1,7 @@
 import { CLUB_ID, CLUB_NAME, TIME_ZONE } from "./config.js";
 import { getRecentMatches, matchTimestamp } from "./ea.js";
 import { parseMatch, matchEmbed } from "./match.js";
-import { postDiscord } from "./discord.js";
+import { sendDiscord } from "./discord.js";
 
 function localDateKey(date, timeZone) {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -56,12 +56,12 @@ if (!previousDayMatches.length) {
 const latest = previousDayMatches[0];
 const parsed = parseMatch(latest, CLUB_ID);
 
-await postDiscord({
-  embeds: [
-    matchEmbed(parsed, {
-      titlePrefix: "🧪 TEST — "
-    })
-  ]
-});
+const webhook = process.env.DISCORD_WEBHOOK_URL;
+if (!webhook) throw new Error("Missing DISCORD_WEBHOOK_URL.");
 
-console.log(`Replayed latest match from previous day (${targetDate}): ${parsed.opponent}`);
+await sendDiscord(
+  webhook,
+  matchEmbed(parsed, CLUB_NAME, "🧪 TEST — ")
+);
+
+console.log(`Replayed latest match from previous day (${targetDate}): ${parsed.opponentName}`);

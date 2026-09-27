@@ -14,7 +14,14 @@ export function parseMatch(match, clubId) {
     name: pick(p,"playername","playerName","name")??"Joueur",
     goals: Number(pick(p,"goals")??0),
     assists: Number(pick(p,"assists")??0),
-    rating: Number(pick(p,"rating")??0)
+    rating: Number(pick(p,"rating")??0),
+    passAttempts: Number(pick(p,"passattempts")??0),
+    passesMade: Number(pick(p,"passesmade")??0),
+    tackleAttempts: Number(pick(p,"tackleattempts")??0),
+    tacklesMade: Number(pick(p,"tacklesmade")??0),
+    shots: Number(pick(p,"shots")??0),
+    saves: Number(pick(p,"saves")??0),
+    position: String(pick(p,"pos")??"")
   }));
 
   return {
@@ -39,7 +46,7 @@ export function matchEmbed(parsed, clubName, prefix="") {
     });
 
   return {
-    username:"Golden Boys Bot",
+    username:`${clubName} Bot`,
     embeds:[{
       title:`${prefix}${label} — ${clubName}`,
       description:`**${clubName} ${parsed.ourScore} — ${parsed.opponentScore} ${parsed.opponentName}**`,
