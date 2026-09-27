@@ -40,7 +40,8 @@ export function parseMatch(match, clubId) {
     name: pick(p,"playername","playerName","name")??"Joueur",
     goals: Number(pick(p,"goals")??0),
     assists: Number(pick(p,"assists")??0),
-    secondAssists: aggregateEventCount(p, 115), // unofficial/community-derived EA mapping
+    secondAssists: aggregateEventCount(p, 115), // kept internally for compatibility
+    keyPasses: aggregateEventCount(p, 219),
     rating: Number(pick(p,"rating")??0),
     passAttempts: Number(pick(p,"passattempts")??0),
     passesMade: Number(pick(p,"passesmade")??0),

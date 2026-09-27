@@ -10,6 +10,10 @@ GitHub Actions bot for **Golden Boys** (`clubId: 16999`, `common-gen5`).
 - Keeps anti-duplicate state in `data/state.json`.
 - Playoffs are currently ignored.
 
+## Player Impact ranking
+
+Player recaps are ranked by a custom **Impact /10** score, independent from the EA rating. The recap highlights goals, assists, key passes, passes per match, pass accuracy, passing-volume share and successful tackles. The top three receive 🥇 🥈 🥉.
+
 ## Manual execution modes
 
 Only three manual modes are exposed in GitHub Actions:

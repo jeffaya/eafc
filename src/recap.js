@@ -32,7 +32,8 @@ function playerTotals(matches) {
       const key = p.name;
       const s = stats.get(key) ?? {
         name:p.name, matches:0, ratingSum:0, ratedMatches:0,
-        goals:0, assists:0, secondAssists:0, passAttempts:0, passesMade:0,
+        goals:0, assists:0, secondAssists:0, keyPasses:0, passAttempts:0, passesMade:0,
+        positions:{forward:0,midfielder:0,defender:0,goalkeeper:0},
         tackleAttempts:0, tacklesMade:0, saves:0, goalsConceded:0,
         cleanSheets:0, goalkeeperMatches:0,
         ballsWon:0, ballsLost:0, ballsWonSamples:0, ballsLostSamples:0
@@ -41,6 +42,7 @@ function playerTotals(matches) {
       s.goals += p.goals ?? 0;
       s.assists += p.assists ?? 0;
       s.secondAssists += p.secondAssists ?? 0;
+      s.keyPasses += p.keyPasses ?? 0;
       s.passAttempts += p.passAttempts ?? 0;
       s.passesMade += p.passesMade ?? 0;
       s.tackleAttempts += p.tackleAttempts ?? 0;
@@ -57,6 +59,7 @@ function playerTotals(matches) {
         s.ballsLostSamples++;
       }
       if (p.position === "goalkeeper") s.goalkeeperMatches++;
+      if (s.positions[p.position] !== undefined) s.positions[p.position]++;
       if ((p.rating ?? 0) > 0) {
         s.ratingSum += p.rating;
         s.ratedMatches++;
@@ -64,16 +67,57 @@ function playerTotals(matches) {
       stats.set(key,s);
     }
   }
-  return [...stats.values()].map(s=>({
-    ...s,
-    avgRating:s.ratedMatches ? s.ratingSum/s.ratedMatches : 0,
-    passPct:s.passAttempts ? Math.round(s.passesMade/s.passAttempts*100) : null,
-    tacklePct:s.tackleAttempts ? Math.round(s.tacklesMade/s.tackleAttempts*100) : null,
-    isGoalkeeper:s.goalkeeperMatches > s.matches/2,
-    savesPerMatch:s.goalkeeperMatches ? s.saves/s.goalkeeperMatches : 0,
-    ballsWonPerMatch:s.ballsWonSamples ? s.ballsWon/s.ballsWonSamples : null,
-    ballsLostPerMatch:s.ballsLostSamples ? s.ballsLost/s.ballsLostSamples : null
-  })).sort((a,b)=>b.avgRating-a.avgRating || b.goals-a.goals || b.assists-a.assists);
+  return [...stats.values()].map(s=>{
+    const position=Object.entries(s.positions).sort((a,b)=>b[1]-a[1])[0]?.[0] ?? "midfielder";
+    return {
+      ...s,
+      position,
+      avgRating:s.ratedMatches ? s.ratingSum/s.ratedMatches : 0,
+      passPct:s.passAttempts ? Math.round(s.passesMade/s.passAttempts*100) : null,
+      tacklePct:s.tackleAttempts ? Math.round(s.tacklesMade/s.tackleAttempts*100) : null,
+      isGoalkeeper:s.goalkeeperMatches > s.matches/2,
+      savesPerMatch:s.goalkeeperMatches ? s.saves/s.goalkeeperMatches : 0,
+      ballsWonPerMatch:s.ballsWonSamples ? s.ballsWon/s.ballsWonSamples : null,
+      ballsLostPerMatch:s.ballsLostSamples ? s.ballsLost/s.ballsLostSamples : null
+    };
+  }).sort((a,b)=>b.avgRating-a.avgRating || b.goals-a.goals || b.assists-a.assists);
+}
+
+const clamp=(n,min=0,max=10)=>Math.max(min,Math.min(max,n));
+
+function impactRating(p) {
+  const games=Math.max(1,p.matches);
+  const passPct=(p.passPct ?? 0)/100;
+  const passing=10*(0.60*Math.min((p.passAttempts/games)/25,1)+0.40*passPct);
+
+  if(p.isGoalkeeper){
+    const saves=10*Math.min((p.savesPerMatch||0)/5,1);
+    const clean=10*Math.min((p.cleanSheets/games)/0.5,1);
+    return clamp(0.50*saves+0.25*clean+0.25*passing);
+  }
+
+  const goals=p.goals/games;
+  const assists=p.assists/games;
+  const keys=p.keyPasses/games;
+  const creation=10*(
+    0.35*Math.min(goals/1.0,1)+
+    0.30*Math.min(assists/0.8,1)+
+    0.35*Math.min(keys/6.0,1)
+  );
+  const tackles=p.tacklesMade/games;
+  const tackleTarget=p.position==="defender"?3:p.position==="midfielder"?2:1.5;
+  const defense=10*Math.min(tackles/tackleTarget,1);
+
+  const weights=p.position==="defender"
+    ? [0.20,0.35,0.45]
+    : p.position==="forward"
+      ? [0.55,0.30,0.15]
+      : [0.40,0.40,0.20];
+  return clamp(weights[0]*creation+weights[1]*passing+weights[2]*defense);
+}
+
+function medal(index){
+  return ["🥇","🥈","🥉"][index] ?? `${index+1}.`;
 }
 
 export function clubRecapPayload(matches, key, prefix="") {
@@ -104,41 +148,39 @@ export function clubRecapPayload(matches, key, prefix="") {
 }
 
 export function playerRecapPayload(matches, key, prefix="") {
-  const players=playerTotals(matches);
-  const teamPassAttempts=players.reduce((n,p)=>n+p.passAttempts,0);
-  const ranked=[...players].sort((a,b)=>b.passAttempts-a.passAttempts);
-  const ranks=new Map(ranked.map((p,i)=>[p.name,i+1]));
+  const base=playerTotals(matches);
+  const teamPassAttempts=base.reduce((n,p)=>n+p.passAttempts,0);
+  const players=base
+    .map(p=>({...p,impact:impactRating(p)}))
+    .sort((a,b)=>b.impact-a.impact || b.avgRating-a.avgRating || b.goals-a.goals || b.assists-a.assists);
 
-  const lines=players.map(p=>{
-    const passing=p.passPct===null ? "—" : `${p.passPct}% (${p.passesMade}/${p.passAttempts})`;
+  const lines=players.map((p,index)=>{
+    const head=`**${medal(index)} ${p.name} · 🔥 Impact ${p.impact.toFixed(1)} · ⭐ EA ${p.avgRating.toFixed(1)}**`;
+    const passingPct=p.passPct ?? 0;
     if(p.isGoalkeeper){
-      return `**🧤 ${p.name} — ⭐ ${p.avgRating.toFixed(1)}**\n` +
-        `🎮 ${p.matches} matchs · 🧤 **${p.saves} arrêts · ${p.savesPerMatch.toFixed(1)}/match**\n` +
-        `🧱 **${p.cleanSheets} clean sheets** · 🥅 ${p.goalsConceded} buts encaissés\n` +
-        `🦶 Passes ${passing}`;
+      return head + `\n` +
+        `🎮 **${p.matches} matchs**\n` +
+        `🧤 **${p.saves} arrêts** · ${p.savesPerMatch.toFixed(1)}/match · 🧱 **${p.cleanSheets} clean sheets**\n` +
+        `🥅 ${p.goalsConceded} buts encaissés · 🦶 **${passingPct}% de passes réussies**`;
     }
-    const ppm=p.matches ? p.passAttempts/p.matches : 0;
+    const ppm=p.matches ? Math.round(p.passAttempts/p.matches) : 0;
     const share=teamPassAttempts ? Math.round(p.passAttempts/teamPassAttempts*100) : 0;
-    const tackling=p.tacklePct===null ? "—" : `${p.tacklePct}% (${p.tacklesMade}/${p.tackleAttempts})`;
-    const possessionBits=[];
-    if(p.ballsWonSamples) possessionBits.push(`♻️ **${p.ballsWon} récupérés · ${p.ballsWonPerMatch.toFixed(1)}/match**`);
-    if(p.ballsLostSamples) possessionBits.push(`❌ **${p.ballsLost} perdus · ${p.ballsLostPerMatch.toFixed(1)}/match**`);
-    const possessionLine=possessionBits.length ? `\n${possessionBits.join(" · ")}` : "";
-    return `**⭐ ${p.name} — ${p.avgRating.toFixed(1)}**\n` +
-      `🎮 ${p.matches} matchs · ⚽ ${p.goals} · 🎯 **${p.assists} passes D** · 🪄 **${p.secondAssists} secondes passes D**\n` +
-      `🦶 **${p.passAttempts} passes tentées** · ${p.passesMade} réussies · **${p.passPct ?? 0}%**\n` +
-      `🔄 **${ppm.toFixed(1)} passes/match** · 🧠 **${share}% du volume** · **#${ranks.get(p.name)} équipe**` +
-      possessionLine + `\n🛡️ Tacles ${tackling}`;
+    return head + `\n` +
+      `🎮 **${p.matches} matchs**\n` +
+      `⚽ **${p.goals} but${p.goals>1?"s":""}** · 🎯 **${p.assists} passe${p.assists>1?"s":""} D** · 🔑 **${p.keyPasses} passe${p.keyPasses>1?"s":""} clé${p.keyPasses>1?"s":""}**\n` +
+      `🦶 **${ppm} passes/match** · **${passingPct}% réussies**\n` +
+      `🧠 **${share}% du volume de jeu**\n` +
+      `🛡️ **${p.tacklesMade} tacle${p.tacklesMade>1?"s":""} réussi${p.tacklesMade>1?"s":""}**`;
   });
 
   const embeds=[]; let block=""; let part=1;
   for(const line of lines){
     const next=block ? `${block}\n\n${line}` : line;
     if(next.length>3900){
-      embeds.push({title:`${prefix}👥 PLAYER RECAP — ${CLUB_NAME}${part>1?` (${part})`:""}`,description:block,footer:{text:`Session ${key} • ${matches.length} matchs du club`}});
+      embeds.push({title:`${prefix}👥 PLAYER RECAP — ${CLUB_NAME}${part>1?` (${part})`:""}`,description:block,footer:{text:`Session ${key} • ${matches.length} matchs du club • Classement par Impact`}});
       block=line; part++;
     } else block=next;
   }
-  if(block) embeds.push({title:`${prefix}👥 PLAYER RECAP — ${CLUB_NAME}${part>1?` (${part})`:""}`,description:block,footer:{text:`Session ${key} • ${matches.length} matchs du club • 2e passe D = mapping EA communautaire (115)`},timestamp:new Date().toISOString()});
+  if(block) embeds.push({title:`${prefix}👥 PLAYER RECAP — ${CLUB_NAME}${part>1?` (${part})`:""}`,description:block,footer:{text:`Session ${key} • ${matches.length} matchs du club • Classement par Impact`},timestamp:new Date().toISOString()});
   return {username:`${CLUB_NAME} Bot`,embeds};
 }

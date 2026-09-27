@@ -86,17 +86,17 @@ for(const [key,group] of sessions) {
 
   for(const match of group) {
     const parsed=parseMatch(match,CLUB_ID);
-    await sendDiscord(clubWebhook,matchEmbed(parsed,CLUB_NAME,"📚 HISTORY — "));
+    await sendDiscord(clubWebhook,matchEmbed(parsed,CLUB_NAME,`📅 ${sessionDateLabel(key)} — `));
     sent++;
     await pause();
   }
 
   const recapMatches=group.map(match=>parsedForRecap(match,key));
-  await sendDiscord(clubWebhook,clubRecapPayload(recapMatches,key,"📚 HISTORY — "));
+  await sendDiscord(clubWebhook,clubRecapPayload(recapMatches,key,`📅 ${sessionDateLabel(key)} — `));
   await pause();
 
   // Player channel: same session reconstructed from the historical raw matches.
-  await sendDiscord(playerWebhook,playerRecapPayload(recapMatches,key,"📚 HISTORY — "));
+  await sendDiscord(playerWebhook,playerRecapPayload(recapMatches,key,`📅 ${sessionDateLabel(key)} — `));
   await pause();
 
   console.log(`Session ${key}: ${group.length} match(es), club recap + player recap sent.`);

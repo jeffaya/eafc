@@ -1,5 +1,29 @@
 # Release Notes
 
+## V16.1
+
+- Historical replay titles now show the real session date instead of `HISTORY`.
+- The date is derived from the EA match timestamp in the club timezone.
+- Matches after midnight and before 06:00 remain attached to the previous evening session.
+
+---
+
+
+## V16
+
+### Impact ranking + cleaner player recap
+
+- Adds a custom **Impact /10** score independent from the EA rating.
+- Impact is position-aware and uses creation, passing influence and successful tackles; goalkeepers use saves, clean sheets and passing.
+- Adds key passes from EA aggregate event `219` to the player recap.
+- Player recap is ranked by Impact with 🥇 🥈 🥉 for the top three.
+- Header order is now: player → Impact → EA rating.
+- Removes the redundant passing-volume team rank.
+- Displays rounded passes per match, pass accuracy, team passing share and successful tackles.
+- Second assists remain parsed internally for compatibility but are no longer shown in the player recap.
+
+---
+
 ## V15
 
 ### Full club + player historical replay
