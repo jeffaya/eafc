@@ -9,7 +9,300 @@
     "37708457070001",
     "37794278920396",
     "37594981870394",
-    "37742969630378"
+    "37742969630378",
+    "37832927980203",
+    "37932824500170"
   ],
-  "sessionMatches": []
+  "sessionMatches": [
+    {
+      "id": "37832927980203",
+      "session": "2026-09-27",
+      "observedAt": "2026-09-27T23:50:51.842Z",
+      "opponentName": "Delfa Fc",
+      "ourScore": 6,
+      "opponentScore": 2,
+      "result": "W",
+      "players": [
+        {
+          "name": "smksmooky",
+          "goals": 0,
+          "assists": 0,
+          "secondAssists": 0,
+          "keyPasses": 3,
+          "rating": 7.6,
+          "passAttempts": 21,
+          "passesMade": 18,
+          "tackleAttempts": 6,
+          "tacklesMade": 2,
+          "shots": 0,
+          "saves": 0,
+          "goalsConceded": 2,
+          "cleanSheetGk": 0,
+          "ballsWon": null,
+          "ballsLost": null,
+          "rawMatchEventAggregates": [
+            "0:2,1:1,100:3,106:2,111:29,121:2,143:7,151:1,152:1,164:2,171:1,174:14,175:14,176:6,182:3,215:18,216:3,219:3,229:2,24:8,25:2,26:9,27:1,28:1,3:1,30:9,31:2,32:4,34:5,35:1,6:5,94:1,97:5"
+          ],
+          "position": "midfielder"
+        },
+        {
+          "name": "MacHunterBCB21",
+          "goals": 2,
+          "assists": 2,
+          "secondAssists": 1,
+          "keyPasses": 1,
+          "rating": 10,
+          "passAttempts": 19,
+          "passesMade": 18,
+          "tackleAttempts": 9,
+          "tacklesMade": 3,
+          "shots": 2,
+          "saves": 0,
+          "goalsConceded": 2,
+          "cleanSheetGk": 0,
+          "ballsWon": null,
+          "ballsLost": null,
+          "rawMatchEventAggregates": [
+            "0:3,1:2,100:1,106:1,107:2,11:2,110:2,111:35,112:3,114:3,115:1,118:1,121:3,124:1,126:1,13:2,131:1,143:2,152:5,164:3,174:15,175:13,176:3,177:2,178:1,182:5,214:2,215:18,216:1,217:2,219:1,229:3,24:17,25:1,26:1,30:5,31:1,32:7,34:6,6:1,97:13"
+          ],
+          "position": "forward"
+        },
+        {
+          "name": "Djib472",
+          "goals": 0,
+          "assists": 0,
+          "secondAssists": 1,
+          "keyPasses": 5,
+          "rating": 7.2,
+          "passAttempts": 29,
+          "passesMade": 26,
+          "tackleAttempts": 1,
+          "tacklesMade": 0,
+          "shots": 1,
+          "saves": 0,
+          "goalsConceded": 2,
+          "cleanSheetGk": 0,
+          "ballsWon": null,
+          "ballsLost": null,
+          "rawMatchEventAggregates": [
+            "1:1,100:5,106:1,108:1,109:1,111:30,115:1,14:1,143:6,144:1,152:4,174:23,175:9,176:14,177:3,182:4,183:1,212:1,215:26,216:3,218:1,219:5,24:12,25:3,26:13,265:1,266:1,28:1,30:17,31:3,32:1,34:8,39:1,6:2,8:1,97:12"
+          ],
+          "position": "midfielder"
+        },
+        {
+          "name": "Masia Ossama",
+          "goals": 3,
+          "assists": 2,
+          "secondAssists": 0,
+          "keyPasses": 3,
+          "rating": 9.8,
+          "passAttempts": 31,
+          "passesMade": 23,
+          "tackleAttempts": 6,
+          "tacklesMade": 2,
+          "shots": 3,
+          "saves": 0,
+          "goalsConceded": 2,
+          "cleanSheetGk": 0,
+          "ballsWon": null,
+          "ballsLost": null,
+          "rawMatchEventAggregates": [
+            "0:2,1:2,101:3,105:1,106:3,107:1,109:3,11:2,111:21,112:2,114:3,118:2,121:2,124:2,13:3,139:1,140:1,142:1,143:7,147:1,151:2,152:7,157:1,158:1,163:1,164:2,174:26,175:19,176:6,177:4,178:1,182:4,183:1,184:2,214:3,215:23,216:7,217:3,219:3,229:2,24:16,25:6",
+            "26:6,27:1,30:10,31:6,32:4,33:1,34:9,36:1,4:1,6:1,8:1,93:1,97:13"
+          ],
+          "position": "midfielder"
+        },
+        {
+          "name": "Stickos39",
+          "goals": 0,
+          "assists": 0,
+          "secondAssists": 2,
+          "keyPasses": 1,
+          "rating": 8.2,
+          "passAttempts": 35,
+          "passesMade": 27,
+          "tackleAttempts": 5,
+          "tacklesMade": 4,
+          "shots": 0,
+          "saves": 0,
+          "goalsConceded": 2,
+          "cleanSheetGk": 0,
+          "ballsWon": null,
+          "ballsLost": null,
+          "rawMatchEventAggregates": [
+            "0:3,1:1,100:1,106:2,108:1,109:1,111:27,112:9,115:2,120:1,121:3,142:1,143:5,152:3,157:1,158:1,164:4,166:1,174:29,175:16,176:12,177:1,182:8,212:1,215:27,216:8,219:1,229:3,230:1,24:19,25:7,26:7,27:1,30:10,31:6,32:7,33:1,34:10,35:1,36:1,6:4,8:1,97:18"
+          ],
+          "position": "midfielder"
+        },
+        {
+          "name": "Youdene39",
+          "goals": 1,
+          "assists": 2,
+          "secondAssists": 2,
+          "keyPasses": 1,
+          "rating": 8,
+          "passAttempts": 13,
+          "passesMade": 12,
+          "tackleAttempts": 0,
+          "tacklesMade": 0,
+          "shots": 2,
+          "saves": 0,
+          "goalsConceded": 2,
+          "cleanSheetGk": 0,
+          "ballsWon": null,
+          "ballsLost": null,
+          "rawMatchEventAggregates": [
+            "107:2,109:2,11:2,111:45,112:1,115:2,12:1,13:2,140:1,143:1,145:1,152:2,174:13,175:5,176:5,177:4,182:2,183:1,202:1,212:1,214:1,215:12,216:1,217:2,219:1,24:9,25:1,28:3,30:5,31:1,32:2,34:5,6:1,97:11,99:1"
+          ],
+          "position": "midfielder"
+        }
+      ],
+      "matchType": "leagueMatch"
+    },
+    {
+      "id": "37932824500170",
+      "session": "2026-09-27",
+      "observedAt": "2026-09-27T23:50:52.113Z",
+      "opponentName": "AchoChacho CF",
+      "ourScore": 2,
+      "opponentScore": 3,
+      "result": "L",
+      "players": [
+        {
+          "name": "smksmooky",
+          "goals": 0,
+          "assists": 0,
+          "secondAssists": 0,
+          "keyPasses": 2,
+          "rating": 7.3,
+          "passAttempts": 22,
+          "passesMade": 19,
+          "tackleAttempts": 4,
+          "tacklesMade": 1,
+          "shots": 0,
+          "saves": 0,
+          "goalsConceded": 3,
+          "cleanSheetGk": 0,
+          "ballsWon": null,
+          "ballsLost": null,
+          "rawMatchEventAggregates": [
+            "0:1,1:2,100:2,106:1,108:1,111:24,112:1,121:1,143:4,144:2,151:1,152:2,157:1,163:1,164:1,171:2,174:18,175:7,176:8,182:8,183:1,212:1,215:19,216:3,219:2,229:1,24:5,25:1,26:10,27:1,28:3,29:1,3:2,30:9,31:3,34:10,36:1,5:1,6:5,97:7"
+          ],
+          "position": "midfielder"
+        },
+        {
+          "name": "MacHunterBCB21",
+          "goals": 1,
+          "assists": 1,
+          "secondAssists": 0,
+          "keyPasses": 0,
+          "rating": 8.5,
+          "passAttempts": 18,
+          "passesMade": 16,
+          "tackleAttempts": 4,
+          "tacklesMade": 0,
+          "shots": 1,
+          "saves": 0,
+          "goalsConceded": 3,
+          "cleanSheetGk": 0,
+          "ballsWon": null,
+          "ballsLost": null,
+          "rawMatchEventAggregates": [
+            "1:3,106:1,107:4,11:1,110:1,111:35,112:2,114:2,12:1,13:1,143:4,152:2,163:2,174:11,175:13,176:1,177:3,178:2,179:2,182:2,184:1,204:1,212:4,214:1,215:16,216:2,217:1,24:16,25:2,265:1,30:3,31:1,32:9,33:1,34:4,39:1,6:2,8:1,97:11"
+          ],
+          "position": "forward"
+        },
+        {
+          "name": "Djib472",
+          "goals": 0,
+          "assists": 0,
+          "secondAssists": 0,
+          "keyPasses": 2,
+          "rating": 7.6,
+          "passAttempts": 20,
+          "passesMade": 17,
+          "tackleAttempts": 5,
+          "tacklesMade": 2,
+          "shots": 0,
+          "saves": 0,
+          "goalsConceded": 3,
+          "cleanSheetGk": 0,
+          "ballsWon": null,
+          "ballsLost": null,
+          "rawMatchEventAggregates": [
+            "0:1,1:3,10:1,100:2,106:1,108:1,109:1,111:22,120:1,121:1,142:1,143:7,147:1,152:1,158:1,163:2,164:2,166:1,174:13,175:10,176:3,177:2,182:5,183:1,212:1,215:17,216:3,219:2,229:1,230:1,24:10,25:3,26:7,266:3,30:13,31:2,32:2,33:1,34:2,5:1,6:6,8:3,97:4"
+          ],
+          "position": "midfielder"
+        },
+        {
+          "name": "Masia Ossama",
+          "goals": 0,
+          "assists": 1,
+          "secondAssists": 1,
+          "keyPasses": 3,
+          "rating": 7.9,
+          "passAttempts": 26,
+          "passesMade": 24,
+          "tackleAttempts": 3,
+          "tacklesMade": 1,
+          "shots": 2,
+          "saves": 0,
+          "goalsConceded": 3,
+          "cleanSheetGk": 0,
+          "ballsWon": null,
+          "ballsLost": null,
+          "rawMatchEventAggregates": [
+            "0:1,1:2,100:1,101:2,105:1,106:5,107:2,109:1,11:1,111:18,112:3,114:2,115:1,118:1,121:1,13:1,14:1,142:1,143:5,147:1,150:2,151:1,152:11,153:1,163:1,164:1,174:23,175:18,176:3,177:5,182:8,183:1,202:1,212:2,215:23,216:2,217:1,218:1,219:3,229:1,24:14,25:1",
+            "26:10,27:1,30:12,31:2,32:9,34:3,6:3,97:18"
+          ],
+          "position": "midfielder"
+        },
+        {
+          "name": "Stickos39",
+          "goals": 0,
+          "assists": 0,
+          "secondAssists": 0,
+          "keyPasses": 0,
+          "rating": 6.7,
+          "passAttempts": 17,
+          "passesMade": 13,
+          "tackleAttempts": 0,
+          "tacklesMade": 0,
+          "shots": 0,
+          "saves": 0,
+          "goalsConceded": 3,
+          "cleanSheetGk": 0,
+          "ballsWon": null,
+          "ballsLost": null,
+          "rawMatchEventAggregates": [
+            "105:1,106:2,111:34,112:1,143:6,151:1,152:1,174:10,175:12,176:4,177:2,178:1,182:1,183:1,215:13,216:4,24:11,25:3,26:1,265:2,266:1,27:1,28:1,30:5,31:4,32:5,34:3,6:3,8:2,97:8"
+          ],
+          "position": "midfielder"
+        },
+        {
+          "name": "Youdene39",
+          "goals": 1,
+          "assists": 0,
+          "secondAssists": 0,
+          "keyPasses": 0,
+          "rating": 7.9,
+          "passAttempts": 13,
+          "passesMade": 12,
+          "tackleAttempts": 2,
+          "tacklesMade": 1,
+          "shots": 2,
+          "saves": 0,
+          "goalsConceded": 3,
+          "cleanSheetGk": 0,
+          "ballsWon": null,
+          "ballsLost": null,
+          "rawMatchEventAggregates": [
+            "0:1,1:1,107:1,108:2,111:36,12:1,121:1,13:2,131:1,143:1,145:1,152:2,163:1,164:1,174:12,175:8,176:4,182:4,183:1,202:1,214:1,215:12,216:1,217:2,229:1,24:9,25:1,26:3,30:8,31:1,32:1,34:3,6:2,97:7"
+          ],
+          "position": "midfielder"
+        }
+      ],
+      "matchType": "leagueMatch"
+    }
+  ]
 }
