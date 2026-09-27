@@ -1,0 +1,83 @@
+name: 👑 Golden Boys Bot
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Mode d'exécution"
+        required: true
+        default: "normal"
+        type: choice
+        options:
+          - normal
+          - test-webhook
+          - replay-last-match
+          - daily-recap
+
+  schedule:
+    # Match watcher: every 10 min from 20:00 through 02:50 Paris time.
+    - cron: "*/10 20-23,0-2 * * *"
+      timezone: "Europe/Paris"
+    # Daily recap after the usual session.
+    - cron: "55 2 * * *"
+      timezone: "Europe/Paris"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: golden-boys-bot
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Test webhook
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'test-webhook' }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: node src/test-webhook.js
+
+      - name: Replay latest real match
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'replay-last-match' }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: node src/replay-last-match.js
+
+      - name: Daily recap
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.mode == 'daily-recap') || (github.event_name == 'schedule' && github.event.schedule == '55 2 * * *') }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: node src/daily-recap.js
+
+      - name: Check new matches
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.mode == 'normal') || (github.event_name == 'schedule' && github.event.schedule != '55 2 * * *') }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: node src/index.js
+
+      - name: Persist state
+        if: ${{ (github.event_name == 'workflow_dispatch' && inputs.mode == 'normal') || (github.event_name == 'schedule' && github.event.schedule != '55 2 * * *') }}
+        run: |
+          if git diff --quiet -- data/state.json; then
+            echo "No state change."
+            exit 0
+          fi
+          git config user.name "golden-boys-bot[bot]"
+          git config user.email "golden-boys-bot[bot]@users.noreply.github.com"
+          git add data/state.json
+          git commit -m "chore(bot): update match state"
+          git pull --rebase
+          git push

@@ -1,18 +1,46 @@
-import fs from "node:fs/promises";
-import {getRecentMatches} from "./ea.js";
-import {buildMatchPayload,sendDiscord} from "./discord.js";
-const CLUB_ID="16999",CLUB_NAME="Golden Boys",STATE=new URL("../data/state.json",import.meta.url),MAX=50;
-const webhook=process.env.DISCORD_WEBHOOK_URL;if(!webhook)throw new Error("Missing DISCORD_WEBHOOK_URL.");
-const id=m=>String(m?.matchId??m?.matchid??m?.id??`${m?._matchType}:${m?.timestamp??JSON.stringify(m).slice(0,150)}`);
-const time=m=>{const x=Number(m?.timestamp??m?.matchTimestamp);return Number.isFinite(x)?x:0;};
-let state;try{state=JSON.parse(await fs.readFile(STATE,"utf8"));}catch{state={processedMatchIds:[]};}
-const done=new Set((state.processedMatchIds??[]).map(String));
-console.log(`[Golden Boys] Checking club ${CLUB_ID}`);
-const raw=await getRecentMatches(CLUB_ID), map=new Map();raw.forEach(m=>map.set(id(m),m));
-const matches=[...map.entries()].sort(([,a],[,b])=>time(a)-time(b));
-async function save(ids){await fs.writeFile(STATE,JSON.stringify({processedMatchIds:[...new Set(ids)].slice(-MAX)},null,2)+"\n");}
-if(!done.size){await save(matches.map(([x])=>x));console.log(`First run: baseline ${matches.length} match(es), nothing posted.`);process.exit(0);}
-const fresh=matches.filter(([x])=>!done.has(x));
+import {CLUB_ID,CLUB_NAME,MAX_PROCESSED_IDS} from "./config.js";
+import {getRecentMatches,matchId,matchTimestamp} from "./ea.js";
+import {parseMatch,matchEmbed} from "./match.js";
+import {sendDiscord} from "./discord.js";
+import {loadState,saveState} from "./state.js";
+import {sessionKey} from "./session.js";
+
+const webhook=process.env.DISCORD_WEBHOOK_URL;
+if(!webhook)throw new Error("Missing DISCORD_WEBHOOK_URL.");
+
+const state=await loadState();
+state.processedMatchIds??=[];
+state.sessionMatches??=[];
+const done=new Set(state.processedMatchIds.map(String));
+
+const raw=await getRecentMatches(CLUB_ID);
+const unique=new Map();
+raw.forEach(m=>unique.set(matchId(m),m));
+const ordered=[...unique.entries()].sort(([,a],[,b])=>matchTimestamp(a)-matchTimestamp(b));
+
+if(!done.size){
+  state.processedMatchIds=ordered.map(([id])=>id).slice(-MAX_PROCESSED_IDS);
+  await saveState(state);
+  console.log(`Baseline initialized with ${ordered.length} match(es).`);
+  process.exit(0);
+}
+
+const fresh=ordered.filter(([id])=>!done.has(id));
 if(!fresh.length){console.log("No new match.");process.exit(0);}
-for(const [x,m] of fresh){await sendDiscord(webhook,buildMatchPayload(m,CLUB_ID,CLUB_NAME));done.add(x);console.log(`Posted ${x}`);}
-await save([...done]);
+
+for(const [id,m] of fresh){
+  const parsed=parseMatch(m,CLUB_ID);
+  await sendDiscord(webhook,matchEmbed(parsed,CLUB_NAME));
+  state.sessionMatches.push({
+    id,
+    session:sessionKey(),
+    observedAt:new Date().toISOString(),
+    ...parsed
+  });
+  done.add(id);
+  console.log(`Posted ${id}`);
+}
+state.processedMatchIds=[...done].slice(-MAX_PROCESSED_IDS);
+// Keep only a small rolling history.
+state.sessionMatches=state.sessionMatches.slice(-100);
+await saveState(state);
