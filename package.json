@@ -1,6 +1,6 @@
 {
   "name": "golden-boys-bot",
-  "version": "12.0.0",
+  "version": "13.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,7 +11,9 @@
     "debug:last-match": "node src/debug-last-match.js",
     "player-recap": "node src/player-recap.js",
     "full-test": "node src/full-test.js",
-    "debug-possession": "node src/debug-possession.js"
+    "debug-possession": "node src/debug-possession.js",
+    "debug-history": "node src/debug-history.js",
+    "replay-history": "node src/replay-history.js"
   },
   "engines": {
     "node": ">=24"

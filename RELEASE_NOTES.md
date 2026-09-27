@@ -6,6 +6,21 @@ The main [README.md](./README.md) is intentionally kept simple and describes ins
 
 ---
 
+## V13
+
+### Historical replay
+
+- Adds `debug-history` to inspect the League + Playoff history currently returned by EA.
+- Adds `replay-history` to post every unique returned historical match to `#stats-club`, oldest first.
+- Deduplicates League/Playoff data by match ID.
+- Normalizes EA Unix timestamps in seconds or milliseconds.
+- Does not modify `data/state.json`.
+- Adds an explicit `YES` confirmation guard before bulk Discord replay.
+- Paces Discord webhook posts to reduce rate-limit risk.
+- Documents the EA API limitation: `maxResultCount` is known, but no verified public pagination parameter is assumed.
+
+---
+
 ## V12
 
 ### Player possession/recovery preparation

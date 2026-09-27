@@ -215,10 +215,24 @@ The available modes are intended for installation and debugging.
 | `full-test` | Tests both destinations with real EA data without changing state |
 | `debug-last-match` | Prints the complete raw EA match JSON in GitHub logs |
 | `debug-possession` | Lists named EA fields related to possession/recoveries when available |
+| `debug-history` | Shows how much League + Playoff history EA currently returns, without Discord/state changes |
+| `replay-history` | Replays every unique historical match returned by EA to `#stats-club`, oldest first; requires confirmation |
 
 For a first installation, `test-webhook` followed by `full-test` is the simplest verification.
 
 ---
+
+
+## Historical replay
+
+`debug-history` should be run first. It asks EA for a large League + Playoff history, deduplicates matches by match ID and reports the oldest/newest match returned.
+
+`replay-history` then sends those returned matches to `#stats-club` in chronological order. It deliberately does **not** modify `data/state.json`, so the normal watcher remains untouched.
+
+For safety, `replay-history` requires the manual workflow field `confirm_history_replay` to be exactly `YES`.
+
+The EA Clubs endpoint is unofficial and undocumented. It supports `maxResultCount`, but there is no verified public pagination parameter. Therefore the bot can replay **all matches EA returns**, but it cannot promise that this equals every match since the club was created.
+
 
 ## Anti-duplicate state
 

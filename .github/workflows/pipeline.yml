@@ -17,6 +17,10 @@ on:
           - player-recap
           - full-test
 
+      confirm_history_replay:
+        description: "Type YES to allow replay-history to post all returned historical matches"
+        required: false
+        default: "NO"
   schedule:
     # Match watcher: every 10 min from 20:00 through 02:50 Paris time.
     - cron: "*/10 20-23,0-2 * * *"
@@ -31,6 +35,9 @@ permissions:
 concurrency:
   group: golden-boys-bot
   cancel-in-progress: false
+
+env:
+  CONFIRM_HISTORY_REPLAY: ${{ github.event.inputs.confirm_history_replay || 'NO' }}
 
 jobs:
   check:
@@ -103,3 +110,15 @@ jobs:
           git commit -m "chore(bot): update match state"
           git pull --rebase
           git push
+
+      - name: Debug available history
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'debug-history'
+        run: node src/debug-history.js
+
+      - name: Replay available history
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'replay-history'
+        env:
+          DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
+          CONFIRM_HISTORY_REPLAY: ${{ github.event.inputs.confirm_history_replay }}
+        run: node src/replay-history.js
+
