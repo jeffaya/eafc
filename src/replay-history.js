@@ -6,7 +6,6 @@ import { sendDiscord } from "./discord.js";
 const webhook=process.env.DISCORD_CLUB_WEBHOOK_URL;
 if(!webhook) throw new Error("Missing DISCORD_CLUB_WEBHOOK_URL");
 
-const max=Number(process.env.HISTORY_MAX_RESULTS || 1000);
 const confirm=String(process.env.CONFIRM_HISTORY_REPLAY || "").toUpperCase();
 if(confirm!=="YES") throw new Error("Safety stop: set confirm_history_replay to YES.");
 
@@ -54,7 +53,7 @@ async function sendSessionHeader(key, group) {
   await sendDiscord(webhook,{embeds:[{title,description}]});
 }
 
-const matches=await getAvailableHistory(CLUB_ID,max);
+const matches=await getAvailableHistory(CLUB_ID);
 const sessions=new Map();
 for(const match of matches) {
   const ms=normalizedTimestamp(match);

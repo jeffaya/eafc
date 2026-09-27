@@ -225,13 +225,13 @@ For a first installation, `test-webhook` followed by `full-test` is the simplest
 
 ## Historical replay
 
-`debug-history` should be run first. It asks EA for a large League + Playoff history, deduplicates matches by match ID and reports the oldest/newest match returned.
+`debug-history` should be run first. It asks EA for the latest 20 League matches, deduplicates them by match ID and reports the oldest/newest match returned.
 
 `replay-history` groups those returned matches by evening session and sends them to `#stats-club` in chronological order. Each session starts with its date, first-match time, last-match time and match count. Matches after midnight and before 06:00 stay attached to the previous evening. It deliberately does **not** modify `data/state.json`, so the normal watcher remains untouched.
 
 For safety, `replay-history` requires the manual workflow field `confirm_history_replay` to be exactly `YES`.
 
-The EA Clubs endpoint is unofficial and undocumented. It supports `maxResultCount`, but there is no verified public pagination parameter. Therefore the bot can replay **all matches EA returns**, but it cannot promise that this equals every match since the club was created.
+For Golden Boys, historical replay currently requests **20 `leagueMatch` matches**. Playoffs are intentionally ignored for now. The EA Clubs endpoint is unofficial and undocumented, so `debug-history` should be used first to verify how many of the requested 20 matches EA actually returns.
 
 
 ## Anti-duplicate state

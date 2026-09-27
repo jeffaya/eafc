@@ -6,6 +6,19 @@ The main [README.md](./README.md) is intentionally kept simple and describes ins
 
 ---
 
+## V13.3
+
+### 20-match League history
+
+- Historical debug/replay now requests exactly the latest 20 `leagueMatch` matches.
+- Playoff history is intentionally ignored for Golden Boys for now.
+- Removes the previous `maxResultCount=1000` request.
+- `debug-history` reports requested count, returned count, oldest match and newest match.
+- `replay-history` keeps chronological order and evening-session grouping.
+- `data/state.json` remains untouched by history modes.
+
+---
+
 ## V13.2
 
 ### History timezone import fix
