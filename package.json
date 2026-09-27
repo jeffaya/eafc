@@ -1,13 +1,14 @@
 {
   "name": "golden-boys-bot",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
     "test:webhook": "node src/test-webhook.js",
     "replay": "node src/replay-last-match.js",
-    "recap": "node src/daily-recap.js"
+    "recap": "node src/daily-recap.js",
+    "debug:last-match": "node src/debug-last-match.js"
   },
   "engines": {
     "node": ">=24"

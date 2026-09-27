@@ -12,6 +12,7 @@ on:
           - normal
           - test-webhook
           - replay-last-match
+          - debug-last-match
           - daily-recap
 
   schedule:
@@ -55,6 +56,10 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: node src/replay-last-match.js
+
+      - name: Debug last match raw EA payload
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'debug-last-match' }}
+        run: npm run debug:last-match
 
       - name: Daily recap
         if: ${{ (github.event_name == 'workflow_dispatch' && inputs.mode == 'daily-recap') || (github.event_name == 'schedule' && github.event.schedule == '55 2 * * *') }}

@@ -294,6 +294,40 @@ Because the EA endpoint is unofficial, its response format can change and the pa
 
 ---
 
+
+# 🔎 Debugging the raw EA match data
+
+A manual GitHub Actions mode called:
+
+`debug-last-match`
+
+is included for inspecting exactly what EA returns for a real match.
+
+Use it when you want to add new player statistics or when EA changes its API.
+
+Go to:
+
+**GitHub repository → Actions → EA FC Clubs Bot → Run workflow**
+
+Choose:
+
+`debug-last-match`
+
+The bot will:
+
+1. Fetch recent EA matches for the club configured in `club.config.json`.
+2. Select the latest match from the **previous calendar day** using the configured timezone.
+3. Print the complete raw match JSON in the **GitHub Actions log**.
+4. Send **nothing to Discord**.
+5. Make **no change to `data/state.json`**.
+
+Open the workflow run, expand the **Debug last match raw EA payload** step, and copy the JSON from the log.
+
+That JSON can be used to identify the exact fields EA provides for player statistics such as ratings, goals, assists, passing, tackles, interceptions, possession losses, or other metrics.
+
+> Note: EA Clubs endpoints are unofficial/undocumented. Available fields can change, so this debug mode is intentionally kept as a permanent diagnostic tool.
+
+
 # ▶️ Step 8 — Start normal operation
 
 Run the workflow manually once with:
