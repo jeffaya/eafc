@@ -6,20 +6,20 @@ on:
       mode:
         description: "Execution mode"
         required: true
-        default: "debug-connect"
+        default: "normal"
         type: choice
         options:
+          - normal
           - debug-connect
           - debug-full
           - replay-history
   schedule:
-    # Europe/Paris: watcher every 10 minutes, 20:03 -> 02:53.
-    # Offset from :00 reduces the risk of GitHub Actions peak-hour delays.
-    - cron: "3-53/10 20-23,0-2 * * *"
-      timezone: "Europe/Paris"
-    # End-of-session recaps at 02:55 local time.
-    - cron: "55 2 * * *"
-      timezone: "Europe/Paris"
+    # GitHub Actions cron is UTC. Current France summer time (UTC+2):
+    # watcher 20:03 -> 02:53 Europe/Paris = 18:03 -> 00:53 UTC.
+    - cron: "3-53/10 18-23 * * *"
+    - cron: "3-53/10 0 * * *"
+    # Daily recap 02:55 Europe/Paris = 00:55 UTC during summer time.
+    - cron: "55 0 * * *"
 
 permissions:
   contents: write
@@ -43,7 +43,7 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "mode=${{ github.event.inputs.mode }}" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ github.event.schedule }}" == "55 2 * * *" ]]; then
+          elif [[ "${{ github.event.schedule }}" == "55 0 * * *" ]]; then
             echo "mode=daily-recap" >> "$GITHUB_OUTPUT"
           else
             echo "mode=normal" >> "$GITHUB_OUTPUT"

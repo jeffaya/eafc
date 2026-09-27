@@ -1,3 +1,11 @@
+# V16.5
+
+- Manual `Run workflow` now defaults to `normal`.
+- Added `normal` to the manual mode choices.
+- Replaced the timezone schedule syntax with explicit UTC cron entries for compatibility.
+- Session/live polling remains every 10 minutes during the evening window.
+- Existing `data/state.json` and `data/history.json` are not shipped or overwritten.
+
 # V16.4
 
 - Scheduled watcher now uses GitHub Actions timezone-aware scheduling with `Europe/Paris`.
