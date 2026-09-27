@@ -1,6 +1,6 @@
 import { CLUB_ID, CLUB_NAME, TIME_ZONE } from "./config.js";
 import { getAvailableHistory, normalizedTimestamp, historyMatchId } from "./history.js";
-import { parseMatch, matchEmbed } from "./match.js";
+import { parseMatch } from "./match.js";
 import { clubRecapPayload, playerRecapPayload } from "./recap.js";
 import { sendDiscord } from "./discord.js";
 
@@ -30,11 +30,6 @@ function sessionKey(ms) {
   return `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
 }
 
-function localTime(ms) {
-  return new Intl.DateTimeFormat("fr-FR",{
-    timeZone:TIME_ZONE,hour:"2-digit",minute:"2-digit",hourCycle:"h23"
-  }).format(new Date(ms));
-}
 
 function sessionDateLabel(key) {
   const [y,m,d]=key.split("-").map(Number);
@@ -54,15 +49,6 @@ function parsedForRecap(match,key) {
 
 async function pause(){ await new Promise(r=>setTimeout(r,1250)); }
 
-async function sendSessionHeader(key, group) {
-  const first=normalizedTimestamp(group[0]);
-  const last=normalizedTimestamp(group.at(-1));
-  await sendDiscord(clubWebhook,{embeds:[{
-    title:`📅 SESSION — ${sessionDateLabel(key)}`,
-    description:`🕘 ${localTime(first)} → ${localTime(last)} · 🎮 ${group.length} match${group.length>1?"s":""}`
-  }]});
-}
-
 const matches=await getAvailableHistory(CLUB_ID);
 const sessions=new Map();
 
@@ -76,33 +62,22 @@ for(const match of matches) {
 
 console.log(`Replaying ${matches.length} unique historical matches across ${sessions.size} session(s).`);
 
-let sent=0;
 for(const [key,group] of sessions) {
   group.sort((a,b)=>normalizedTimestamp(a)-normalizedTimestamp(b));
-
-  // Club channel: session header + every match + reconstructed session recap.
-  await sendSessionHeader(key,group);
-  await pause();
-
-  for(const match of group) {
-    const parsed=parseMatch(match,CLUB_ID);
-    await sendDiscord(clubWebhook,matchEmbed(parsed,CLUB_NAME,`📅 ${sessionDateLabel(key)} — `));
-    sent++;
-    await pause();
-  }
-
   const recapMatches=group.map(match=>parsedForRecap(match,key));
-  await sendDiscord(clubWebhook,clubRecapPayload(recapMatches,key,`📅 ${sessionDateLabel(key)} — `));
+  const datePrefix=`📅 ${sessionDateLabel(key)} — `;
+
+  // Historical replay is recap-only: never post historical matches to the live/session webhook.
+  await sendDiscord(clubWebhook,clubRecapPayload(recapMatches,key,datePrefix));
+  await pause();
+  await sendDiscord(playerWebhook,playerRecapPayload(recapMatches,key,datePrefix));
   await pause();
 
-  // Player channel: same session reconstructed from the historical raw matches.
-  await sendDiscord(playerWebhook,playerRecapPayload(recapMatches,key,`📅 ${sessionDateLabel(key)} — `));
-  await pause();
-
-  console.log(`Session ${key}: ${group.length} match(es), club recap + player recap sent.`);
+  console.log(`Session ${key}: club recap + player recap sent (${group.length} match(es) aggregated).`);
 }
 
-console.log(`History replay complete: ${sent} match(es) across ${sessions.size} session(s).`);
-console.log("Club history -> DISCORD_CLUB_WEBHOOK_URL");
-console.log("Player history -> DISCORD_PLAYER_WEBHOOK_URL");
-console.log("data/state.json was not modified.");
+console.log(`History replay complete: ${sessions.size} session recap(s).`);
+console.log("Club recaps -> DISCORD_CLUB_WEBHOOK_URL");
+console.log("Player recaps -> DISCORD_PLAYER_WEBHOOK_URL");
+console.log("DISCORD_SESSION_WEBHOOK_URL is not used by replay-history.");
+console.log("data/state.json and data/history.json were not modified.");

@@ -6,5 +6,6 @@ export async function loadState(){
   catch{return {processedMatchIds:[],sessionMatches:[]};}
 }
 export async function saveState(state){
+  await fs.mkdir(new URL("../data/",import.meta.url),{recursive:true});
   await fs.writeFile(FILE,JSON.stringify(state,null,2)+"\n");
 }

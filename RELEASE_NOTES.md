@@ -1,4 +1,26 @@
+# V16.4
+
+- Scheduled watcher now uses GitHub Actions timezone-aware scheduling with `Europe/Paris`.
+- Watcher runs at 20:03, 20:13, … through 02:53 local time; avoiding minute `00` reduces peak-hour scheduling delays.
+- Daily recap runs at 02:55 Europe/Paris.
+- Upgrade ZIP no longer contains `data/state.json` or `data/history.json`, so existing repository data is not overwritten.
+- State writer creates the `data/` directory automatically when needed.
+- Session/live remains schedule-only; replay-history still targets Club and Player only.
+
 # Release Notes
+
+## V16.3
+
+### Replay recaps only
+
+- `replay-history` no longer posts historical session headers or individual match results.
+- Historical replay sends only the reconstructed club recap to `DISCORD_CLUB_WEBHOOK_URL`.
+- Historical replay sends only the reconstructed player/Impact recap to `DISCORD_PLAYER_WEBHOOK_URL`.
+- `DISCORD_SESSION_WEBHOOK_URL` is used only by the scheduled/normal match watcher, never by replay.
+- Replay titles keep the real historical session date.
+- `data/history.json` is read-only and is not shipped as an empty file, so an existing repository history is not overwritten by this upgrade package.
+
+---
 
 ## V16.2
 

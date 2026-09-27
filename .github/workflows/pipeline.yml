@@ -13,8 +13,13 @@ on:
           - debug-full
           - replay-history
   schedule:
-    - cron: "*/10 20-23,0-2 * * *"
+    # Europe/Paris: watcher every 10 minutes, 20:03 -> 02:53.
+    # Offset from :00 reduces the risk of GitHub Actions peak-hour delays.
+    - cron: "3-53/10 20-23,0-2 * * *"
+      timezone: "Europe/Paris"
+    # End-of-session recaps at 02:55 local time.
     - cron: "55 2 * * *"
+      timezone: "Europe/Paris"
 
 permissions:
   contents: write

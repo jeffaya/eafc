@@ -20,7 +20,7 @@ Only three manual modes are exposed in GitHub Actions:
 
 - `debug-connect` — verifies both Discord webhooks.
 - `debug-full` — runs a complete non-destructive Discord/stat test.
-- `replay-history` — replays historical matches from oldest to newest, grouped by evening session, then reconstructs **both the club recap and the player recap** for every session.
+- `replay-history` — reconstructs historical evening sessions and sends **only the club recap and player recap** for each session. It never posts historical matches to the live/session webhook.
 
 ## Historical replay source
 
@@ -39,7 +39,7 @@ or an object containing an array under `matches`, `history`, or `items`.
 
 The V14 package intentionally does **not** include an empty `data/history.json`, so deploying it does not overwrite a history file already present in your repository.
 
-There is no YES/NO confirmation: selecting `replay-history` runs directly.
+There is no YES/NO confirmation: selecting `replay-history` runs directly. Replay uses only `DISCORD_CLUB_WEBHOOK_URL` and `DISCORD_PLAYER_WEBHOOK_URL`; `DISCORD_SESSION_WEBHOOK_URL` is reserved for scheduled live match results.
 
 For every historical session, replay sends the match history + club recap to `DISCORD_CLUB_WEBHOOK_URL`, and the reconstructed player recap to `DISCORD_PLAYER_WEBHOOK_URL`.
 
