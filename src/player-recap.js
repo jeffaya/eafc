@@ -1,8 +1,8 @@
 import { sendDiscord } from "./discord.js";
 import { recentParsedMatches, selectSession, playerRecapPayload } from "./recap.js";
 
-const webhook=process.env.DISCORD_WEBHOOK_URL;
-if(!webhook) throw new Error("Missing DISCORD_WEBHOOK_URL.");
+const webhook=process.env.DISCORD_PLAYER_WEBHOOK_URL;
+if(!webhook) throw new Error("Missing DISCORD_PLAYER_WEBHOOK_URL.");
 
 const recent=await recentParsedMatches();
 const {key,matches}=selectSession(recent,{latest:true});

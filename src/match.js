@@ -1,5 +1,31 @@
 const pick=(o,...keys)=>keys.map(k=>o?.[k]).find(v=>v!==undefined&&v!==null);
 
+function optionalNumber(player, ...keys) {
+  const raw = pick(player, ...keys);
+  if (raw === undefined || raw === null || raw === "") return null;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : null;
+}
+
+function rawAggregates(player) {
+  return [0,1,2,3]
+    .map(i => String(pick(player, `match_event_aggregate_${i}`) ?? ""))
+    .filter(Boolean);
+}
+
+function aggregateEventCount(player, eventCode) {
+  const wanted = String(eventCode);
+  let total = 0;
+  for (let i = 0; i <= 3; i++) {
+    const raw = String(pick(player, `match_event_aggregate_${i}`) ?? "");
+    for (const token of raw.split(",")) {
+      const [code, count] = token.split(":");
+      if (code === wanted) total += Number(count ?? 0) || 0;
+    }
+  }
+  return total;
+}
+
 export function parseMatch(match, clubId) {
   const clubs=match?.clubs??{};
   const ours=clubs[String(clubId)]??clubs[clubId]??{};
@@ -14,6 +40,7 @@ export function parseMatch(match, clubId) {
     name: pick(p,"playername","playerName","name")??"Joueur",
     goals: Number(pick(p,"goals")??0),
     assists: Number(pick(p,"assists")??0),
+    secondAssists: aggregateEventCount(p, 115), // unofficial/community-derived EA mapping
     rating: Number(pick(p,"rating")??0),
     passAttempts: Number(pick(p,"passattempts")??0),
     passesMade: Number(pick(p,"passesmade")??0),
@@ -21,6 +48,17 @@ export function parseMatch(match, clubId) {
     tacklesMade: Number(pick(p,"tacklesmade")??0),
     shots: Number(pick(p,"shots")??0),
     saves: Number(pick(p,"saves")??0),
+    goalsConceded: Number(pick(p,"goalsconceded")??0),
+    cleanSheetGk: Number(pick(p,"cleansheetsgk")??0),
+    // Possession/recovery aliases are intentionally nullable: do not turn missing
+    // undocumented EA data into fake zeroes.
+    ballsWon: optionalNumber(p,
+      "ballsWon","ballswon","ballsWonBack","ballswonback",
+      "possessionsWon","possessionWon","possessionswon","possessionwon"),
+    ballsLost: optionalNumber(p,
+      "ballsLost","ballslost","possessionsLost","possessionLost",
+      "possessionslost","possessionlost"),
+    rawMatchEventAggregates: rawAggregates(p),
     position: String(pick(p,"pos")??"")
   }));
 

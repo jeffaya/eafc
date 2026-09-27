@@ -1,6 +1,11 @@
 import {sendDiscord} from "./discord.js";
 import {CLUB_NAME} from "./config.js";
-const url=process.env.DISCORD_WEBHOOK_URL;
-if(!url)throw new Error("Missing DISCORD_WEBHOOK_URL.");
-await sendDiscord(url,{username:`${CLUB_NAME} Bot`,content:`👑 **${CLUB_NAME} Bot connecté** — webhook opérationnel.`});
-console.log("Webhook OK.");
+
+const clubUrl=process.env.DISCORD_CLUB_WEBHOOK_URL;
+const playerUrl=process.env.DISCORD_PLAYER_WEBHOOK_URL;
+if(!clubUrl) throw new Error("Missing DISCORD_CLUB_WEBHOOK_URL.");
+if(!playerUrl) throw new Error("Missing DISCORD_PLAYER_WEBHOOK_URL.");
+
+await sendDiscord(clubUrl,{username:`${CLUB_NAME} Bot`,content:`👑 **${CLUB_NAME} Bot — CLUB STATS** — webhook opérationnel.`});
+await sendDiscord(playerUrl,{username:`${CLUB_NAME} Bot`,content:`👥 **${CLUB_NAME} Bot — PLAYER STATS** — webhook opérationnel.`});
+console.log("Club + player webhooks OK.");

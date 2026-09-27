@@ -56,8 +56,8 @@ if (!previousDayMatches.length) {
 const latest = previousDayMatches[0];
 const parsed = parseMatch(latest, CLUB_ID);
 
-const webhook = process.env.DISCORD_WEBHOOK_URL;
-if (!webhook) throw new Error("Missing DISCORD_WEBHOOK_URL.");
+const webhook = process.env.DISCORD_CLUB_WEBHOOK_URL;
+if (!webhook) throw new Error("Missing DISCORD_CLUB_WEBHOOK_URL.");
 
 await sendDiscord(
   webhook,

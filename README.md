@@ -1,3 +1,55 @@
+# V12 — Possession / ball-recovery support
+
+V12 keeps **everything from V11**: two Discord destinations, whole-session aggregation, assists + second assists, pass-volume influence, tackles, and goalkeeper-specific stats.
+
+For every **outfield player**, V12 also supports:
+
+- ♻️ balls/possessions won (total + per match)
+- ❌ balls/possessions lost (total + per match)
+
+Important: EA does not document these fields and the community confirms that possession won/lost data exists in the hidden match-event aggregates, but no sufficiently reliable public numeric event mapping was available when V12 was built. V12 therefore **never invents a value**. It reads known named aliases if EA exposes them and otherwise omits the line. Goalkeepers never receive this line.
+
+The parser also preserves each player's raw `match_event_aggregate_0..3` values internally so a confirmed mapping can be plugged in later without redesigning the recap.
+
+A `debug-possession` script lists possession/recovery-related named fields currently exposed by EA.
+
+---
+
+# V11 — Separate Club Stats and Player Stats destinations
+
+V11 keeps all V10 statistics and splits Discord output across two webhook secrets:
+
+- `DISCORD_CLUB_WEBHOOK_URL` — live match results, replayed match, and Daily Club Recap.
+- `DISCORD_PLAYER_WEBHOOK_URL` — Player Recap (ratings, goals, assists, second assists, pass volume/share/rank, tackles, and goalkeeper-specific stats).
+
+`daily-recap` sends the club recap to the club destination and the individual recap to the player destination.
+`full-test` tests both destinations in one run.
+`test-webhook` sends one connectivity message to each destination.
+`player-recap` sends only to the Player Stats destination.
+
+## Upgrade from V10
+
+Create **two Discord webhooks** pointing to the two desired channels/threads, then create/update these GitHub Actions repository secrets:
+
+1. `DISCORD_CLUB_WEBHOOK_URL`
+2. `DISCORD_PLAYER_WEBHOOK_URL`
+
+The old `DISCORD_WEBHOOK_URL` is no longer used by V11. Once V11 is working, it can be deleted from GitHub Secrets.
+
+If the destinations are Discord threads, create/copy a webhook URL that actually targets the intended thread (or a thread-specific webhook URL supported by your Discord setup); the bot simply posts to the URL stored in each secret.
+
+All V10 player-stat logic is preserved, including community-derived EA event `115` for second assists and the goalkeeper-specific display.
+
+---
+
+# V10 — Creative influence + goalkeeper recap
+
+V10 adds second assists (EA aggregate event 115, unofficial/community-derived), pass volume, passes per match, share/rank of team pass volume, and a goalkeeper-specific recap with saves, saves/match, clean sheets, goals conceded and passing accuracy.
+
+`player-recap` and `full-test` automatically use the new presentation.
+
+---
+
 # V9 — Player session recap + full test
 
 V9 adds player-session statistics based on fields confirmed from a real EA Clubs payload:

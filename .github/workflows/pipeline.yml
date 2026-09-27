@@ -50,13 +50,14 @@ jobs:
       - name: Test webhook
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'test-webhook' }}
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
+          DISCORD_PLAYER_WEBHOOK_URL: ${{ secrets.DISCORD_PLAYER_WEBHOOK_URL }}
         run: node src/test-webhook.js
 
       - name: Replay latest real match
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'replay-last-match' }}
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
         run: node src/replay-last-match.js
 
       - name: Debug last match raw EA payload
@@ -66,25 +67,27 @@ jobs:
       - name: Player recap test
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'player-recap' }}
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_PLAYER_WEBHOOK_URL: ${{ secrets.DISCORD_PLAYER_WEBHOOK_URL }}
         run: node src/player-recap.js
 
       - name: Full test
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'full-test' }}
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
+          DISCORD_PLAYER_WEBHOOK_URL: ${{ secrets.DISCORD_PLAYER_WEBHOOK_URL }}
         run: node src/full-test.js
 
       - name: Daily recap
         if: ${{ (github.event_name == 'workflow_dispatch' && inputs.mode == 'daily-recap') || (github.event_name == 'schedule' && github.event.schedule == '55 2 * * *') }}
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
+          DISCORD_PLAYER_WEBHOOK_URL: ${{ secrets.DISCORD_PLAYER_WEBHOOK_URL }}
         run: node src/daily-recap.js
 
       - name: Check new matches
         if: ${{ (github.event_name == 'workflow_dispatch' && inputs.mode == 'normal') || (github.event_name == 'schedule' && github.event.schedule != '55 2 * * *') }}
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
         run: node src/index.js
 
       - name: Persist state

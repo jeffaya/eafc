@@ -1,8 +1,10 @@
 import { sendDiscord } from "./discord.js";
 import { recentParsedMatches, selectSession, clubRecapPayload, playerRecapPayload } from "./recap.js";
 
-const webhook=process.env.DISCORD_WEBHOOK_URL;
-if(!webhook) throw new Error("Missing DISCORD_WEBHOOK_URL.");
+const clubWebhook=process.env.DISCORD_CLUB_WEBHOOK_URL;
+const playerWebhook=process.env.DISCORD_PLAYER_WEBHOOK_URL;
+if(!clubWebhook) throw new Error("Missing DISCORD_CLUB_WEBHOOK_URL.");
+if(!playerWebhook) throw new Error("Missing DISCORD_PLAYER_WEBHOOK_URL.");
 
 const recent=await recentParsedMatches();
 const {key,matches}=selectSession(recent);
@@ -12,6 +14,6 @@ if(!matches.length){
   process.exit(0);
 }
 
-await sendDiscord(webhook,clubRecapPayload(matches,key));
-await sendDiscord(webhook,playerRecapPayload(matches,key));
-console.log(`Club + player recap sent for ${key}: ${matches.length} match(es).`);
+await sendDiscord(clubWebhook,clubRecapPayload(matches,key));
+await sendDiscord(playerWebhook,playerRecapPayload(matches,key));
+console.log(`Club recap -> club channel; player recap -> player channel for ${key}: ${matches.length} match(es).`);
