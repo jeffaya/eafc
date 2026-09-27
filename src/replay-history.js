@@ -1,4 +1,4 @@
-import { CLUB_ID, CLUB_NAME, TIMEZONE } from "./config.js";
+import { CLUB_ID, CLUB_NAME, TIME_ZONE } from "./config.js";
 import { getAvailableHistory, normalizedTimestamp } from "./history.js";
 import { parseMatch, matchEmbed } from "./match.js";
 import { sendDiscord } from "./discord.js";
@@ -13,7 +13,7 @@ if(confirm!=="YES") throw new Error("Safety stop: set confirm_history_replay to 
 function parts(ms) {
   const values={};
   for(const p of new Intl.DateTimeFormat("en-CA",{
-    timeZone:TIMEZONE, year:"numeric",month:"2-digit",day:"2-digit",
+    timeZone:TIME_ZONE, year:"numeric",month:"2-digit",day:"2-digit",
     hour:"2-digit",minute:"2-digit",hourCycle:"h23"
   }).formatToParts(new Date(ms))) {
     if(p.type!=="literal") values[p.type]=p.value;
@@ -34,7 +34,7 @@ function sessionKey(ms) {
 
 function localTime(ms) {
   return new Intl.DateTimeFormat("fr-FR",{
-    timeZone:TIMEZONE,hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+    timeZone:TIME_ZONE,hour:"2-digit",minute:"2-digit",hourCycle:"h23"
   }).format(new Date(ms));
 }
 
@@ -42,7 +42,7 @@ function sessionDateLabel(key) {
   const [y,m,d]=key.split("-").map(Number);
   // Noon UTC avoids a timezone boundary when formatting Europe/Paris.
   return new Intl.DateTimeFormat("fr-FR",{
-    timeZone:TIMEZONE,weekday:"long",day:"numeric",month:"long",year:"numeric"
+    timeZone:TIME_ZONE,weekday:"long",day:"numeric",month:"long",year:"numeric"
   }).format(new Date(Date.UTC(y,m-1,d,12)));
 }
 

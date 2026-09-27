@@ -6,6 +6,16 @@ The main [README.md](./README.md) is intentionally kept simple and describes ins
 
 ---
 
+## V13.2
+
+### History timezone import fix
+
+- Fixes `debug-history`: use the existing `TIME_ZONE` config export.
+- Applies the same fix to `replay-history`.
+- Validates JavaScript syntax, local named imports/exports and the GitHub Actions YAML.
+
+---
+
 ## V13.1
 
 ### History workflow + session headers fix

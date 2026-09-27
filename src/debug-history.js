@@ -1,11 +1,11 @@
-import { CLUB_ID, CLUB_NAME, TIMEZONE } from "./config.js";
+import { CLUB_ID, CLUB_NAME, TIME_ZONE } from "./config.js";
 import { getAvailableHistory, normalizedTimestamp } from "./history.js";
 
 const max=Number(process.env.HISTORY_MAX_RESULTS || 1000);
 const matches=await getAvailableHistory(CLUB_ID,max);
 
 console.log(`Club: ${CLUB_NAME} (${CLUB_ID})`);
-console.log(`Timezone: ${TIMEZONE}`);
+console.log(`Timezone: ${TIME_ZONE}`);
 console.log(`Unique League + Playoff matches returned by EA: ${matches.length}`);
 if(matches.length) {
   console.log(`Oldest returned: ${new Date(normalizedTimestamp(matches[0])).toISOString()}`);
