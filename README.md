@@ -1,62 +1,22 @@
 # EA FC Clubs Discord Bot
 
-GitHub Actions bot for **Golden Boys** (`clubId: 16999`, `common-gen5`).
+Reusable EA SPORTS FC Clubs → Discord bot. Documentation is intentionally club-neutral and contains no personal club affiliation.
 
-## Automatic behavior
+## V17 behavior
+- GitHub schedule: every 10 minutes from **21:07 to 01:57**, with `timezone: Europe/Paris`.
+- Every normal run is a **catch-up run**: it fetches the latest 20 League matches, posts every missing match to the session webhook, and rebuilds missing session memory.
+- From **01:30**, the first normal run available sends the Club + Player recap. No exact 01:30 cron is required.
+- A recap is marked complete only after both Discord sends succeed.
+- `processedMatchIds` is a rolling anti-duplicate list; `sessionMatches` contains only sessions awaiting recap; `recappedSessionKeys` prevents duplicate recaps.
+- Normal runs merge newly observed raw matches into `data/history.json` for long-term replay.
 
-- Checks the latest **20 League matches** during the evening.
-- Posts each newly completed match to the **session** Discord webhook (quasi-live post-match).
-- Sends the end-of-session club/player recap.
-- Keeps anti-duplicate state in `data/state.json`.
-- Playoffs are currently ignored.
+## Replay one evening
+Run the workflow manually with `mode = replay-history` and `replay_date = YYYY-MM-DD`, e.g. `2026-09-27`. Empty date = latest historical session. Replay sends only Club + Player recaps and never writes historical matches to the session channel.
 
-## Player Impact ranking
+## Webhook secrets
+`DISCORD_SESSION_WEBHOOK_URL`, `DISCORD_CLUB_WEBHOOK_URL`, `DISCORD_PLAYER_WEBHOOK_URL`.
 
-Player recaps are ranked by a custom **Impact /10** score, independent from the EA rating. The recap highlights goals, assists, key passes, passes per match, pass accuracy, passing-volume share and successful tackles. The top three receive 🥇 🥈 🥉.
+## Upgrade safety
+This V17 upgrade ZIP intentionally contains **neither `data/state.json` nor `data/history.json`**, and does not contain `club.config.json`. Your live state, history and club configuration therefore remain untouched when the files are copied over an existing repository.
 
-## Manual execution modes
-
-Only three manual modes are exposed in GitHub Actions:
-
-- `debug-connect` — verifies both Discord webhooks.
-- `debug-full` — runs a complete non-destructive Discord/stat test.
-- `replay-history` — reconstructs historical evening sessions and sends **only the club recap and player recap** for each session. It never posts historical matches to the live/session webhook.
-
-## Historical replay source
-
-`replay-history` uses this priority:
-
-1. If `data/history.json` exists and contains matches, **use that file**.
-2. Otherwise, call EA for the latest **20 `leagueMatch`** matches.
-
-Accepted `history.json` shapes:
-
-```json
-[ { "matchId": "..." } ]
-```
-
-or an object containing an array under `matches`, `history`, or `items`.
-
-The V14 package intentionally does **not** include an empty `data/history.json`, so deploying it does not overwrite a history file already present in your repository.
-
-There is no YES/NO confirmation: selecting `replay-history` runs directly. Replay uses only `DISCORD_CLUB_WEBHOOK_URL` and `DISCORD_PLAYER_WEBHOOK_URL`; `DISCORD_SESSION_WEBHOOK_URL` is reserved for scheduled live match results.
-
-For every historical session, replay sends the match history + club recap to `DISCORD_CLUB_WEBHOOK_URL`, and the reconstructed player recap to `DISCORD_PLAYER_WEBHOOK_URL`.
-
-## Secrets
-
-- `DISCORD_CLUB_WEBHOOK_URL` — end-of-session club recap (`#stats-club`)
-- `DISCORD_PLAYER_WEBHOOK_URL` — end-of-session player recap (`#stats-player`)
-- `DISCORD_SESSION_WEBHOOK_URL` — newly completed matches during the playing session (`#session`)
-
-## Club configuration
-
-Edit `club.config.json` to reuse the bot for another club.
-
-## Notes
-
-The EA Clubs endpoint is unofficial. V14 reuses the same EA request implementation for normal polling and history fallback, rather than maintaining a second history-specific HTTP implementation.
-
-## History safety
-
-`data/history.json` is historical source data. Normal runs only commit `data/state.json`; they never overwrite or truncate `data/history.json`. When upgrading an existing repository, keep the repository’s existing `data/history.json`.
+The EA Clubs endpoint is unofficial. Key passes currently use aggregate event `219`, whose mapping is not officially documented by EA.

@@ -1,5 +1,4 @@
 name: EA FC Clubs Bot
-
 on:
   workflow_dispatch:
     inputs:
@@ -8,75 +7,58 @@ on:
         required: true
         default: "normal"
         type: choice
-        options:
-          - normal
-          - debug-connect
-          - debug-full
-          - replay-history
+        options: [normal, debug-connect, debug-full, replay-history]
+      replay_date:
+        description: "Replay session date (YYYY-MM-DD). Empty = latest available session"
+        required: false
+        type: string
   schedule:
-    # GitHub Actions cron is UTC. Current France summer time (UTC+2):
-    # watcher 20:03 -> 02:53 Europe/Paris = 18:03 -> 00:53 UTC.
-    - cron: "3-53/10 18-23 * * *"
-    - cron: "3-53/10 0 * * *"
-    # Daily recap 02:55 Europe/Paris = 00:55 UTC during summer time.
-    - cron: "55 0 * * *"
-
+    - cron: "7-57/10 21-23 * * *"
+      timezone: "Europe/Paris"
+    - cron: "7-57/10 0-1 * * *"
+      timezone: "Europe/Paris"
 permissions:
   contents: write
-
 jobs:
   bot:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: "24"
-
       - name: Choose execution mode
         id: choose
         shell: bash
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "mode=${{ github.event.inputs.mode }}" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ github.event.schedule }}" == "55 0 * * *" ]]; then
-            echo "mode=daily-recap" >> "$GITHUB_OUTPUT"
           else
             echo "mode=normal" >> "$GITHUB_OUTPUT"
           fi
-
       - name: Run bot
         env:
           DISCORD_CLUB_WEBHOOK_URL: ${{ secrets.DISCORD_CLUB_WEBHOOK_URL }}
           DISCORD_PLAYER_WEBHOOK_URL: ${{ secrets.DISCORD_PLAYER_WEBHOOK_URL }}
           DISCORD_SESSION_WEBHOOK_URL: ${{ secrets.DISCORD_SESSION_WEBHOOK_URL }}
+          REPLAY_DATE: ${{ github.event.inputs.replay_date }}
         shell: bash
         run: |
-          MODE="${{ steps.choose.outputs.mode }}"
-          echo "Mode: $MODE"
-          case "$MODE" in
+          case "${{ steps.choose.outputs.mode }}" in
             normal) node src/index.js ;;
-            daily-recap) node src/daily-recap.js ;;
             debug-connect) node src/debug-connect.js ;;
             debug-full) node src/debug-full.js ;;
             replay-history) node src/replay-history.js ;;
-            *) echo "Unknown mode: $MODE"; exit 1 ;;
+            *) exit 1 ;;
           esac
-
-      - name: Commit state
+      - name: Commit bot data
         if: steps.choose.outputs.mode == 'normal'
         shell: bash
         run: |
-          if git diff --quiet -- data/state.json; then
-            echo "No state change."
-            exit 0
-          fi
+          if git diff --quiet -- data/state.json data/history.json; then exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/state.json
-          git commit -m "chore: update EA FC bot state"
+          git add data/state.json data/history.json
+          git commit -m "chore: update EA FC bot data"
           git push
