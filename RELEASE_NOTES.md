@@ -1,5 +1,14 @@
 # Release Notes
 
+## V17.1
+- Fixes replay fallback when `data/history.json` exists but does not contain the requested session.
+- Replay now searches local history first, then automatically queries the latest 20 League matches from EA when the requested `replay_date` is absent.
+- Local and EA results are merged in memory and deduplicated before selecting the requested session.
+- Replay fallback does not overwrite `data/history.json`.
+- Club + Player only; the live session webhook remains untouched.
+- README updated to document the corrected fallback behavior.
+- Upgrade package still excludes mutable `state.json`, `history.json`, and real club configuration.
+
 ## V17.0
 - Catch-up architecture: every run processes all still-missing matches in the latest 20 League results.
 - Self-heals `sessionMatches` even when a match ID was already processed.
