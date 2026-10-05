@@ -13,10 +13,10 @@ on:
         required: false
         type: string
   schedule:
-    - cron: "7-57/10 21-23 * * *"
-      timezone: "Europe/Paris"
-    - cron: "7-57/10 0-1 * * *"
-      timezone: "Europe/Paris"
+    #- cron: "7-57/10 21-23 * * *"
+      #timezone: "Europe/Paris"
+    #- cron: "7-57/10 0-1 * * *"
+      #timezone: "Europe/Paris"
 permissions:
   contents: write
 jobs:
